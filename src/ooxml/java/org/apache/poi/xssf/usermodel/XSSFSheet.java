@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import javax.xml.namespace.QName;
 
 import org.apache.poi.POIXMLDocumentPart;
@@ -713,13 +712,14 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
             ctRow = prev.getCTRow();
             ctRow.set(CTRow.Factory.newInstance());
         } else {
-            if(_rows.isEmpty() || rownum > _rows.lastKey()) {
+            final TreeMap <Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+            if(treeRows.isEmpty() || rownum > treeRows.lastKey()) {
                 // we can append the new row at the end
                 ctRow = worksheet.getSheetData().addNewRow();
             } else {
                 // get number of rows where row index < rownum
                 // --> this tells us where our row should go
-                int idx = _rows.headMap(rownumI).size();
+                int idx = treeRows.headMap(rownumI).size();
                 ctRow = worksheet.getSheetData().insertNewRow(idx);
             }
         }
@@ -1036,7 +1036,8 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
      */
     @Override
     public int getFirstRowNum() {
-        return _rows.isEmpty() ? 0 : _rows.firstKey();
+        final TreeMap<Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+        return treeRows.isEmpty() ? 0 : treeRows.firstKey();
     }
 
     /**
@@ -1154,7 +1155,8 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
 
     @Override
     public int getLastRowNum() {
-        return _rows.isEmpty() ? 0 : _rows.lastKey();
+        final TreeMap<Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+        return treeRows.isEmpty() ? 0 : treeRows.lastKey();
     }
 
     @Override
@@ -1429,7 +1431,8 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
             // Performance optimization: explicit boxing is slightly faster than auto-unboxing, though may use more memory
             final Integer startI = new Integer(startRowNum); // NOSONAR
             final Integer endI = new Integer(endRowNum+1); // NOSONAR
-            final Collection<XSSFRow> inclusive = _rows.subMap(startI, endI).values();
+            final TreeMap <Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+            final Collection<XSSFRow> inclusive = treeRows.subMap(startI, endI).values();
             rows.addAll(inclusive);
         }
         return rows;
@@ -1926,7 +1929,8 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
 
         // Performance optimization: explicit boxing is slightly faster than auto-unboxing, though may use more memory
         final Integer rownumI = new Integer(row.getRowNum()); // NOSONAR
-        int idx = _rows.headMap(rownumI).size();
+        final TreeMap <Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+        int idx = treeRows.headMap(rownumI).size();
         _rows.remove(rownumI);
         worksheet.getSheetData().removeRow(idx);
 
@@ -2949,7 +2953,8 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
                 // remove row from worksheet.getSheetData row array
                 // Performance optimization: explicit boxing is slightly faster than auto-unboxing, though may use more memory
                 final Integer rownumI = new Integer(row.getRowNum()); // NOSONAR
-                int idx = _rows.headMap(rownumI).size();
+                final TreeMap <Integer, XSSFRow> treeRows = new TreeMap<Integer, XSSFRow>(_rows);
+                int idx = treeRows.headMap(rownumI).size();
                 worksheet.getSheetData().removeRow(idx);
 
                 // remove row from _rows
