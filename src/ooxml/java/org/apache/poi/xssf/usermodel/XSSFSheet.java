@@ -112,7 +112,7 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
     protected CTSheet sheet;
     protected CTWorksheet worksheet;
 
-    private final SortedMap<Integer, XSSFRow> _rows = new TreeMap<Integer, XSSFRow>();
+    private final Map<Integer, XSSFRow> _rows = new HashMap<Integer, XSSFRow>();
     private List<XSSFHyperlink> hyperlinks;
     private ColumnHelper columnHelper;
     private CommentsTable sheetComments;
@@ -1396,7 +1396,7 @@ public class XSSFSheet extends POIXMLDocumentPart implements Sheet {
     @Override
     public XSSFRow getRow(int rownum) {
         // Performance optimization: explicit boxing is slightly faster than auto-unboxing, though may use more memory
-        final Integer rownumI = new Integer(rownum); // NOSONAR
+        final Integer rownumI = Integer.valueOf(rownum);
         return _rows.get(rownumI);
     }
     
